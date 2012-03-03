@@ -1,0 +1,180 @@
+Exercise
+--------
+
+Its three months into your new postdoc position and you've been reading papers like a madman in order to come up to speed on the new project you're on. You've already read through 150 papers like a champion, and saved all of the corresponding PDFs on your hard drive. Your faculty advisor has just given you ten new papers to read, but based on their titles, you suspect that you've already read a few of them.
+
+Write a program that looks at the filenames of the papers on your hard drive and compares them with the filenames of the 10 papers your boss just gave you, returning the filenames of the papers you don't already have in your archive.
+
+Solution
+--------
+
+In order to simplify some of the details, I've included two text files containing the filenames you'll work with: papers_on_drive.txt contains the filenames of the 150 PDFs on your hard drive, and papers_from_boss.txt contains the filenames of the 10 papers your boss gave you. The filename of each PDF is on a separate line. Because you are exceptional at information management, you have used an unambiguous unique identifier to name each file: the digital object identifier [LINK] (percent encoding the slash character, of course). 
+
+The solution relies on an algorithm that isn't the most efficient, but it is clear and easy to implement. You want to look at the first time in the papers from your boss, then step through each item in the papers you already have and compare the two. Using this method, you will either find a match (meaning you already have the paper), or you'll reach the end of the list of papers you already have without a match. If you find a match, you know you already have that paper and so you don't need to read it. You can go to the next item in the list of papers your faculty advisor gave you and start trying to match that item to an item in the list of papers on your drive. If you arrive at the end of the list, you haven't yet read that paper and you'll want to add it to a stack to read. You can then grab the next paper from the list your boss gave you and start comparing it to the list you already have. By the end of this process, all the papers you received from your boss will have either been discarded because you already read them, or on the "to-read" stack.
+
+
+# First off we'll need to read in the data from papers_on_drive.txt as a list.
+# Open file
+f = open("papers_on_drive.txt")
+
+# Make a list
+driveList = f.readlines()
+
+# Close file.
+f.close()
+
+# We will need to do exactly the same thing to the data in papers_from_boss.txt.
+# We can use the same variable for the file since we've already closed the other one.
+f = open("papers_from_boss.txt")
+bossList = f.readlines()
+f.close()
+
+# Before we get started stepping through the data, we need to create an empty list to hold the filenames of the papers the boss gave but we haven't yet read.
+
+toReadStack = []
+
+# Now figure out if there are any duplicates.
+
+# Grab a filename from the list your boss gave you.
+for filenameFromBoss in bossList:
+  # Grab a filename from the list on your drive.
+  for filenameFromDrive in driveList:
+    # Are they the same?
+    if filenameFromBoss == filenameFromDrive:
+
+
+Exercise
+--------
+
+You want to automate an experiment that is mind-numbingly boring to babysit because it takes hours to perform a single run. You've determined that the key to automating the experiment involves reading data off of a digital thermometer. Data continuously comes off of this thing in a series of hexadecimal bytes, essentially a string of two characters. The byte "0x02" denotes the beginning of the sequence, and the byte "0x03" denotes the end of the sequence, with the actual data encoded in between.
+
+Write a program that can break out the data array from the stream of data.
+
+
+Exercise
+--------
+
+You've come back to your lab after that awesome conference in Mallorca, only to find that your long-running experiment has been hosed. At some point over the past 10 days, the temperature increased above the setpoint of 70C (at least once, possibly more), dooming your results. Your system is set up to read the temperature every five minutes, appending the value of the temperature to a file called temperature.dat, and the corresponding datetime string to a file called datetime.dat, both of which are text files.
+
+Write a program that returns a list of times that the temperature went above 70C.
+
+Solution
+--------
+
+# First, pull in the data from temperature.dat as a list.
+f = open("temperature.dat")
+
+# Make a list.
+tempList = f.readlines()
+
+# Close the file.
+f.close()
+
+# Now pull in the time data as a list. We can reuse the f variable since we closed the file.
+f = open("datetime.dat")
+timeList = f.readlines()
+f.close()
+
+# The trick to this problem is to find the indices of the items in tempList which are greater than 70C, then record the corresponding times in a separate list. The magic happens by iterating over a list of integers of the same length as tempList/timeList and using the value of the integer as the index of tempList. 
+
+# Although we don't strictly speaking need this variable, it is good practice to have a variable for the high temperature.
+highTemp = 70.0
+
+# Initialize an empty list to collect the times when the temperature is too high.
+timeHighList = []
+
+# Now iterate over a list of integers which is the same length as timeList/tempList, using the integer as the index for comparison.
+
+for indx in range(len(tempList)):
+  if tempList[indx] > highTemp:
+    timeHighList.append(timeList[indx])
+
+print timeHighList
+
+
+Exercise
+--------
+You have an experiment set up to measure the current-voltage characteristic of a power device. Your instruments have recorded the values of voltage (measured in volts) in a file called voltage.dat. The instruments recorded the corresponding current (measured in milliamps) in a file called current.dat. 
+
+Write a program to calculate the values of power, measured in watts, corresponding to each voltage.
+
+Solution
+--------
+
+The solution to this problem consists of reading in the data from voltage.dat and current.dat, scaling the values of the current data to amps, then multiplying the values of voltage to the corresponding values of current. Finally, the new power data needs to be written to a file.
+
+# Open the voltage file.
+f = open("voltage.dat")
+
+# Pull that data into memory as a list.
+voltageList = f.readlines()
+
+# Close the file.
+f.close
+
+# Next we'll get the current data as a list. The variable f can be reused since we closed the voltage file earlier.
+f = open("current.dat")
+currentListMilliamps = f.readlines()
+f.close()
+
+# Create a variable to use for conversion from milliamps to amps. We will then make an empty list, and populate that list by iterating over the milliamp current data.
+milliampsToAmpsFactor = 1000
+
+# Initialize the list.
+currentListAmps = []
+
+# Iterate over the milliamp list, scaling the data and populating the current list measured in amps.
+for current in currentListMilliamps:
+  currentListAmps.append(milliampsToAmpsFactor * current)
+
+# Finally, we'll create an empty list for the power data, then populate the list by element-wise multiplication of the voltage and current lists.
+
+# Initialize the power list.
+powerList = []
+
+# Now populate the power list by mulitplying voltage and current.
+for indx in range(len(voltageList)):
+  powerList.append(voltageList[indx] * currentListAmps[indx])
+
+# Write the result to a file.
+f = open("power.dat", "w")
+for power in powerList:
+  f.write(power)
+
+f.close()
+
+Exercise
+--------
+In addition to the voltage and power data, your instrument returns efficiency data as well (in efficiency.dat). You need to concatenate all of the data into a single, comma separated values file.
+
+Write a program to read data out of the three files and concatenate them into a single file.
+
+Solution
+--------
+
+The solution to this problem is straightforward. First, we read all of the data into lists. Then, we create a file (lets call it threecolumn.dat) and write the data in a comma separated format. The trick is to iterate over all of the data, creating the proper string for each line of threecolumn.dat by using the string addition operator, then writing that string to the next line of the file.
+
+# Open the file containing the voltage, read it into a list, then close the file.
+f = open("voltage.dat")
+voltageList = f.readlines()
+f.close()
+
+# Read in the current and efficiency data as well.
+f = open("current.dat")
+currentList = f.readlines()
+f.close()
+
+f = open("efficiency.dat")
+efficiencyList = f.readlines()
+f.close()
+
+# Create the threecolumn.dat file for writing.
+f = open("threecolumn.dat", "w")
+
+# Now iterate over an index array the same length as one of the data lists --- it doesn't matter which one since they are all the same length.
+for indx in range(len(voltageList)):
+  # Now for the secret sauce: create a large string out all of the data by using the string addition operator. Make sure to throw commas into the right positions within the string we are creating.
+  f.write(voltageList[indx] + "," + currentList[indx] + "," + efficiencyList[indx])
+
+# Close the file and we're done.
+f.close()
